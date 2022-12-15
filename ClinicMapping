@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.12;
 //Before changing version, verify if the anterior has string.concat. Otherwise create a optimal function
 
@@ -7,9 +8,9 @@ pragma experimental ABIEncoderV2;
 contract ClinicMapping{
 
     //Structs
-    struct Company {uint ID,
+    struct Company {uint ID;
     string CompanyName;
-    string City
+    string City;
     string State; 
     string ZipCode;
     }
@@ -19,7 +20,7 @@ contract ClinicMapping{
     uint AcquisitionDate;
     string ICD10PCS;
     string ICD9CM; 
-    string Description
+    string Description;
     }
 
     //Mappings
@@ -29,13 +30,15 @@ contract ClinicMapping{
 
     //Events
     event companyInclusionEvent(uint indexed _companyId);
-    
+
     uint public companyCount;
 
 
     constructor() public{
         companyCount = 0;
-        addCompany("MedCenter", "Florianopolis", "SC", "67125-866")
+        addCompany("MedCenter", "Florianopolis", "SC", "67125-866");
+        addMedicalAssetToCompany(1, "CT scan", 1092005, 15042018,
+         "B?2", "88.38", "This equipment is used to obtain internal images");
     }
 
     function uint2str(uint _pInt) internal pure returns (string memory _uintAsString) {
@@ -63,7 +66,9 @@ contract ClinicMapping{
 
 
 
-    function addCompany(string memory _name, string pCity, string pState, string pZipCode) public returns (uint companyID) {
+    function addCompany(string memory _name, string memory pCity, string memory pState, string memory pZipCode) 
+    public returns (uint memory companyID) {
+        
         companies[msg.sender] = Company(companyCount, _name, pCity, pState, pZipCode);
         string returnValue = uint2str(companyCount);
         companyCount++;
@@ -74,15 +79,35 @@ contract ClinicMapping{
         return msg;
     }
 
-    function addMedicalAssetToCompany(uint pCompanyID, string Name; uint FabricationDate; uint AcquisitionDate;
-    string ICD10PCS; string ICD9CM; string Description ) public {
-        companyAssets[pCompanyID] = MedicalAsset(1, "CT scan", 1092005, 15042018,
-         "B?2", "88.38", "This equipment is used to obtain internal images");
+    function addMedicalAssetToCompany(uint memory pCompanyID, string memory pName, uint memory pFabricationDate,
+     uint memory pAcquisitionDate, string memory pICD10PCS, string memory pICD9CM, string memory pDescription) public {
+
+        companyAssets[pCompanyID] = MedicalAsset(pName, pFabricationDate, pAcquisitionDate, pICD10PCS, pICD9CM, pDescription);
+
     }
 
-    function getCompany() public view returns (string[] memory, )
+    function getCompanies() public view returns (uint [] memory,string[] memory,
+     string [] memory, string [] memory, string [] memory){
 
-    function getMedicalDevice() public view returns (uint[] memory, )
+        uint[] memory ID = new uint[](companyCount);
+        string[] memory companyName = new string[](companyCount);
+        string[] memory companyCity = new string[](companyCount);
+        string[] memory companyState = new string[](companyCount);
+        string[] memory companyZipCode = new string[](companyCount);
+
+        for (uint i = 0; i < companyCount; i++)
+        {
+            Company storage company = companies[i];
+            ID[i] = company.ID;
+            companyName[i] = company.CompanyName;
+            companyCity[i] = company.City;
+            companyState[i] = company.State;
+            companyZipCode[i] = company.ZipCode;
+        }
+
+        return (ID, companyName, companyCity, companyState, companyZipCode);
+     }
+
 
 }
 
