@@ -1,0 +1,88 @@
+pragma solidity ^0.8.12;
+//Before changing version, verify if the anterior has string.concat. Otherwise create a optimal function
+
+pragma experimental ABIEncoderV2;
+//Standart ABI enconder doesn't allow the usage of arrays with dynamic types
+
+contract ClinicMapping{
+
+    //Structs
+    struct Company {uint ID,
+    string CompanyName;
+    string City
+    string State; 
+    string ZipCode;
+    }
+
+    struct MedicalAsset {string Name;
+    uint FabricationDate;
+    uint AcquisitionDate;
+    string ICD10PCS;
+    string ICD9CM; 
+    string Description
+    }
+
+    //Mappings
+    mapping(address => Company) public companies;
+    //the key is the company ID
+    mapping(uint => MedicalAssets) public companyAssets;
+
+    //Events
+    event companyInclusionEvent(uint indexed _companyId);
+    
+    uint public companyCount;
+
+
+    constructor() public{
+        companyCount = 0;
+        addCompany("MedCenter", "Florianopolis", "SC", "67125-866")
+    }
+
+    function uint2str(uint _pInt) internal pure returns (string memory _uintAsString) {
+        if (__pInt == 0) {
+            return "0";
+        }
+        uint iterator1 = _pInt;
+        uint len;
+
+        while (iterator1 != 0) {
+            len++;
+            iterator1 /= 10;
+        }
+        bytes memory bstr = new bytes(len);
+        uint k = len;
+        while (_pInt != 0) {
+            k = k-1;
+            uint8 temp = (48 + uint8(_pInt - _pInt / 10 * 10));
+            bytes1 b1 = bytes1(temp);
+            bstr[k] = b1;
+            _pInt /= 10;
+        }
+        return string(bstr);
+    }
+
+
+
+    function addCompany(string memory _name, string pCity, string pState, string pZipCode) public returns (uint companyID) {
+        companies[msg.sender] = Company(companyCount, _name, pCity, pState, pZipCode);
+        string returnValue = uint2str(companyCount);
+        companyCount++;
+
+        string msg = string.concat("This is your company ID: ", returnValue);
+
+
+        return msg;
+    }
+
+    function addMedicalAssetToCompany(uint pCompanyID, string Name; uint FabricationDate; uint AcquisitionDate;
+    string ICD10PCS; string ICD9CM; string Description ) public {
+        companyAssets[pCompanyID] = MedicalAsset(1, "CT scan", 1092005, 15042018,
+         "B?2", "88.38", "This equipment is used to obtain internal images");
+    }
+
+    function getCompany() public view returns (string[] memory, )
+
+    function getMedicalDevice() public view returns (uint[] memory, )
+
+}
+
